@@ -2,7 +2,9 @@
 <x-app-layout>
     <div class="max-w-4xl mx-auto">
         <h1 class="text-3xl font-bold mb-2">{{ $course->title }}</h1>
-        <p class="text-gray-600 mb-4">Impartido por: {{ $course->instructor->name }}</p>
+        <p class="text-gray-600 mb-4">Impartido por: <a href="{{ route('profile.public', $course->instructor->id) }}" class="font-semibold text-blue-600 hover:underline">
+                    {{ $course->instructor->name }}
+                </a></p>
 
         <p class="mb-4 text-gray-800">{{ $course->description }}</p>
 
@@ -25,7 +27,9 @@
         {{-- Listado de reseñas --}}
         @forelse($course->reviews as $review)
             <div class="border rounded p-3 mb-3 bg-gray-50">
-                <p class="text-sm text-gray-500">Por {{ $review->user->name }}</p>
+                <a href="{{ route('profile.public', $review->user) }}" class="font-semibold text-blue-600 hover:underline">
+                    {{ $review->user->name }}
+                </a>
                 <p class="text-yellow-500">⭐ {{ $review->rating }}/5</p>
                 <p>{{ $review->comment }}</p>
 
