@@ -29,9 +29,18 @@
                 <p class="text-yellow-500">⭐ {{ $review->rating }}/5</p>
                 <p>{{ $review->comment }}</p>
 
-                <div class="text-sm text-gray-600 mt-2">
-                    ❤️ {{ $review->likes->count() }}
-                </div>
+                {{-- Like de reseña --}}
+                @auth
+                    <form action="{{ route('likes.toggle', ['type' => 'review', 'id' => $review->id]) }}" method="POST"
+                        class="inline">
+                        @csrf
+                        <button type="submit" class="text-red-600 text-sm">
+                            ❤️ {{ $review->likes->count() }}
+                        </button>
+                    </form>
+                @else
+                    <span class="text-gray-400 text-sm">❤️ {{ $review->likes->count() }}</span>
+                @endauth
             </div>
         @empty
             <p>No hay reseñas todavía.</p>
