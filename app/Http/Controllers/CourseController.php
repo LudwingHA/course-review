@@ -7,7 +7,7 @@ use App\Models\Course;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
 use Illuminate\Support\Str;
-
+use App\Http\Controllers\Controller;
 class CourseController extends Controller
 {
     public function __construct()

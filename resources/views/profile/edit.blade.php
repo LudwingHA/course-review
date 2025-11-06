@@ -1,29 +1,49 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+    <div class="max-w-3xl mx-auto py-8">
+        <h1 class="text-3xl font-bold mb-6">Mi Perfil</h1>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
+        @if(session('success'))
+            <div class="bg-green-100 text-green-800 p-3 rounded mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data" class="space-y-6">
+            @csrf
+            @method('PATCH')
+
+            {{-- Nombre --}}
+            <div>
+                <label class="block font-medium">Nombre</label>
+                <input type="text" name="name" value="{{ old('name', $user->name) }}"
+                       class="w-full border rounded p-2">
+                @error('name') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
+            {{-- Avatar --}}
+            <div>
+                <label class="block font-medium">Avatar</label>
+                <div class="flex items-center gap-4 mt-2">
+                    <img src="{{ $user->avatar ? asset('storage/'.$user->avatar) : 'https://via.placeholder.com/80' }}"
+                         class="w-20 h-20 rounded-full object-cover border" alt="Avatar actual">
+                    <input type="file" name="avatar" accept="image/*" class="text-sm">
                 </div>
+                @error('avatar') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             </div>
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
+            {{-- Descripción --}}
+            <div>
+                <label class="block font-medium">Descripción</label>
+                <textarea name="description" rows="4"
+                          class="w-full border rounded p-2">{{ old('description', $user->description) }}</textarea>
+                @error('description') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
             </div>
-        </div>
+
+            <div>
+                <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
     </div>
 </x-app-layout>
