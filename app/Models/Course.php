@@ -14,15 +14,16 @@ class Course extends Model
         'title',
         'slug',
         'description',
-        'instructor_name',
-        'user_id',
-        'category',
         'image',
+        'user_id',
+        'category_id',
         'tags',
         'content_table',
         'youtube_urls',
         'published_at',
+        'instructor_name',
     ];
+
 
     protected $casts = [
         'published_at' => 'date',
@@ -62,8 +63,12 @@ class Course extends Model
         return $this->hasMany(Review::class);
     }
     public function getRouteKeyName()
-{
-    return 'slug';
-}
+    {
+        return 'slug';
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
 
 }

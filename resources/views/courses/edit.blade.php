@@ -37,13 +37,22 @@
                     <img src="{{ asset('storage/' . $course->image) }}" class="w-40 mt-2 rounded shadow">
                 @endif
             </div>
-
             <!-- Categoría -->
             <div class="mb-4">
-                <x-input-label for="category" :value="__('Categoría')" />
-                <x-text-input id="category" name="category" type="text" class="block mt-1 w-full"
-                    value="{{ old('category', $course->category) }}" />
+                <x-input-label for="category_id" :value="__('Categoría')" />
+                <select id="category_id" name="category_id"
+                    class="block w-full mt-1 border-gray-300 rounded-md shadow-sm dark:bg-gray-900 dark:text-gray-200 focus:ring-indigo-500 focus:border-indigo-500"
+                    required>
+                    <option value="">-- Selecciona una categoría --</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ old('category_id', $course->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
             </div>
+
 
             <!-- Etiquetas -->
             <div class="mb-4">

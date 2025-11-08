@@ -14,8 +14,8 @@
             <!-- Título -->
             <div class="mb-4">
                 <x-input-label for="title" :value="__('Título del curso')" />
-                <x-text-input id="title" name="title" type="text" class="block w-full mt-1"
-                    value="{{ old('title') }}" required autofocus />
+                <x-text-input id="title" name="title" type="text" class="block w-full mt-1" value="{{ old('title') }}"
+                    required autofocus />
                 <x-input-error :messages="$errors->get('title')" class="mt-2" />
             </div>
 
@@ -37,16 +37,26 @@
 
             <!-- Categoría -->
             <div class="mb-4">
-                <x-input-label for="category" :value="__('Categoría')" />
-                <x-text-input id="category" name="category" type="text" class="block mt-1 w-full"
-                    value="{{ old('category') }}" />
+                <x-input-label for="category_id" :value="__('Categoría')" />
+                <select id="category_id" name="category_id"
+                    class="block w-full mt-1 border-gray-300 rounded-md shadow-sm dark:bg-gray-900 dark:text-gray-200 focus:ring-indigo-500 focus:border-indigo-500"
+                    required>
+                    <option value="">-- Selecciona una categoría --</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ old('category_id', $course->category_id ?? '') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
             </div>
+
+
 
             <!-- Etiquetas -->
             <div class="mb-4">
                 <x-input-label for="tags" :value="__('Etiquetas (separadas por coma)')" />
-                <x-text-input id="tags" name="tags" type="text" class="block mt-1 w-full"
-                    value="{{ old('tags') }}" />
+                <x-text-input id="tags" name="tags" type="text" class="block mt-1 w-full" value="{{ old('tags') }}" />
             </div>
 
             <!-- Tabla de contenido -->

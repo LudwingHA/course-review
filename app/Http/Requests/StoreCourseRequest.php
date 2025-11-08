@@ -11,17 +11,17 @@ class StoreCourseRequest extends FormRequest
         return auth()->user()->isInstructor();
     }
 
-    public function rules(): array
+    public function rules()
     {
         return [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'category' => 'nullable|string|max:100',
-            'tags' => 'nullable|string|max:255',
-            'content_table' => 'nullable|string',
-            'youtube_urls' => 'nullable|string',
-            'published_at' => 'nullable|date',
-            'image' => 'nullable|image|max:2048',
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'image' => ['nullable', 'image', 'max:2048'],
+            'category_id' => ['required', 'exists:categories,id'], // 👈 Asegura que la categoría existe
+            'tags' => ['nullable', 'string'],
+            'content_table' => ['nullable', 'string'],
+            'youtube_urls' => ['nullable', 'string'],
+            'published_at' => ['nullable', 'date'],
         ];
     }
 

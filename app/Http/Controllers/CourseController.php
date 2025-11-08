@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Category;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
 use Illuminate\Support\Facades\Storage;
@@ -24,7 +25,7 @@ class CourseController extends Controller
 
         abort_unless($user->isInstructor(), 403, 'Solo los instructores pueden ver esto.');
 
-        $courses = $user->courses()->latest()->paginate(10);
+        $courses = $user->courses()->with('category')->latest()->paginate(10);
 
         return view('courses.index', compact('courses'));
     }
@@ -36,7 +37,9 @@ class CourseController extends Controller
     {
         abort_unless(auth()->user()->isInstructor(), 403);
 
-        return view('courses.create');
+        $categories = Category::orderBy('name')->get();
+
+        return view('courses.create', compact('categories'));
     }
 
     /**
@@ -72,7 +75,9 @@ class CourseController extends Controller
     {
         $this->authorize('update', $course);
 
-        return view('courses.edit', compact('course'));
+        $categories = Category::orderBy('name')->get();
+
+        return view('courses.edit', compact('course', 'categories'));
     }
 
     /**
