@@ -15,7 +15,14 @@ class StoreCourseRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
-            'description' => 'required|string|min:10',
+            'description' => 'required|string',
+            'category' => 'nullable|string|max:100',
+            'tags' => 'nullable|string|max:255',
+            'content_table' => 'nullable|string',
+            'youtube_urls' => 'nullable|string',
+            'published_at' => 'nullable|date',
+            'image' => 'nullable|image|max:2048',
         ];
     }
+
 }

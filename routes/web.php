@@ -15,9 +15,9 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/', [PublicCourseController::class, 'index'])->name('home');
-Route::get('/curso/{course}', [PublicCourseController::class, 'show'])->name('courses.show');
+Route::get('/curso/{course:slug}', [PublicCourseController::class, 'show'])->name('courses.show');
 Route::post('/curso/{course}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
-Route::post('/like/{type}/{id}', [LikeController::class, 'toggle'])->name('likes.toggle');
+Route::post('/like/{type}/{id}', [LikeController::class, 'toggle'])->name('like.toggle');
 Route::get('/perfil/{user}', [PublicProfileController::class, 'show'])->name('profile.public');
 
 require __DIR__ . '/auth.php';
