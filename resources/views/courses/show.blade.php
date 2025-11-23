@@ -1,4 +1,4 @@
-<x-app-layout> 
+<x-app-layout>
     <div class="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8 space-y-10">
 
         {{-- ================== INFO DEL CURSO ================== --}}
@@ -8,9 +8,8 @@
                 {{-- Imagen --}}
                 @if ($course->image)
                     <div class="overflow-hidden rounded-xl">
-                        <img src="{{ asset('storage/' . $course->image) }}" 
-                             alt="Imagen del curso {{ $course->title }}"
-                             class="w-full h-72 object-cover transition-transform duration-300 hover:scale-105">
+                        <img src="{{ asset('storage/' . $course->image) }}" alt="Imagen del curso {{ $course->title }}"
+                            class="w-full h-72 object-cover transition-transform duration-300 hover:scale-105">
                     </div>
                 @endif
 
@@ -21,12 +20,36 @@
                         <h1 class="text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-4">
                             {{ $course->title }}
                         </h1>
+                        @php
+                        
+                            $likes = $course->likes->count();
+
+                        
+                            $totalReviews = $course->reviews->count();
+                            $avgRating = $totalReviews > 0 ? $course->reviews->avg('rating') : 0;
+
+                            $ratingNormalized = ($avgRating / 5) * 100;
+
+                          
+                            $maxLikes = 10;
+                            $likesNormalized = min(($likes / $maxLikes) * 100, 100);
+
+                            $confidence = min($totalReviews / 10, 1);
+
+                            $ratingWeight = 0.7;
+                            $likesWeight = 0.3;
+
+                            $baseScore = ($ratingNormalized * $ratingWeight) + ($likesNormalized * $likesWeight);
+
+               
+                            $ponderacionFinal = $baseScore * $confidence;
+                        @endphp
 
                         {{-- Instructor --}}
                         <div class="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-4">
                             <span>👨‍🏫 Instructor:</span>
                             <a href="{{ route('profile.public', $course->instructor->id) }}"
-                               class="font-semibold text-orange-600 hover:underline">
+                                class="font-semibold text-orange-600 hover:underline">
                                 {{ $course->instructor->name }}
                             </a>
                         </div>
@@ -42,7 +65,7 @@
                             @if($course->tags)
                                 @foreach(explode(',', $course->tags) as $tag)
                                     <span
-                                      class="px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300">
+                                        class="px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-800 text-sm text-gray-700 dark:text-gray-300">
                                         #{{ trim($tag) }}
                                     </span>
                                 @endforeach
@@ -53,23 +76,37 @@
                             {{ $course->description }}
                         </p>
                     </div>
+                    <div
+                        class="mt-4 bg-orange-100 dark:bg-gray-800 p-4 rounded-xl border border-orange-300 dark:border-gray-600">
+                        <p class="text-lg font-bold text-orange-600 dark:text-orange-400">
+                            🔥 Puntuación del curso: {{ number_format($ponderacionFinal, 1) }}/100
+                        </p>
+
+                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                            ⭐ Promedio: {{ number_format($avgRating, 1) }} / 5
+                            | ❤️ Likes: {{ $likes }}
+                            | 📝 Reseñas: {{ $totalReviews }}
+                        </p>
+                    </div>
+
 
                     {{-- Botón Like --}}
                     <div class="mt-6">
                         @auth
-                            <form action="{{ route('like.toggle', ['type' => 'course', 'id' => $course->id]) }}" method="POST">
-                                @csrf
+                                            <form action="{{ route('like.toggle', ['type' => 'course', 'id' => $course->id]) }}"
+                                                method="POST">
+                                                @csrf
 
-                                <button
-                                    class="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all
-                                    {{ $userLiked 
-                                        ? 'bg-red-500 text-white hover:bg-red-600' 
-                                        : 'bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-white hover:bg-red-100 dark:hover:bg-red-900/40' }}">
+                                                <button
+                                                    class="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all
+                                                                            {{ $userLiked
+                            ? 'bg-red-500 text-white hover:bg-red-600'
+                            : 'bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-white hover:bg-red-100 dark:hover:bg-red-900/40' }}">
 
-                                    ❤️ {{ $userLiked ? 'Te gusta' : 'Me gusta' }}
-                                    <span class="font-bold">({{ $course->likes->count() }})</span>
-                                </button>
-                            </form>
+                                                    ❤️ {{ $userLiked ? 'Te gusta' : 'Me gusta' }}
+                                                    <span class="font-bold">({{ $course->likes->count() }})</span>
+                                                </button>
+                                            </form>
                         @else
                             <p class="text-gray-400 text-sm mt-2">
                                 Inicia sesión para dar like ❤️
@@ -89,8 +126,8 @@
                     <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow border border-gray-200 dark:border-gray-700">
                         <h2 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">📑 Tabla de contenido</h2>
                         <pre class="whitespace-pre-line text-gray-700 dark:text-gray-300">
-{{ $course->content_table }}
-                        </pre>
+                            {{ $course->content_table }}
+                                                    </pre>
                     </div>
                 @endif
 
@@ -109,9 +146,7 @@
 
                                 @if($videoId)
                                     <iframe class="w-full rounded-lg shadow aspect-video"
-                                        src="https://www.youtube.com/embed/{{ $videoId }}"
-                                        frameborder="0"
-                                        allowfullscreen>
+                                        src="https://www.youtube.com/embed/{{ $videoId }}" frameborder="0" allowfullscreen>
                                     </iframe>
                                 @endif
 
@@ -150,11 +185,10 @@
                                 @csrf
 
                                 <div class="mb-4">
-                                    <select name="rating" required 
-                                        class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 
-                                        bg-white dark:bg-gray-900 
-                                        text-gray-900 dark:text-white 
-                                        focus:ring focus:ring-orange-500">
+                                    <select name="rating" required class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 
+                                                                bg-white dark:bg-gray-900 
+                                                                text-gray-900 dark:text-white 
+                                                                focus:ring focus:ring-orange-500">
                                         <option value="">Selecciona calificación</option>
                                         <option value="5">⭐⭐⭐⭐⭐</option>
                                         <option value="4">⭐⭐⭐⭐</option>
@@ -165,19 +199,17 @@
                                 </div>
 
                                 <div class="mb-4">
-                                    <textarea name="comment" rows="3" required
-                                        class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 
-                                        bg-white dark:bg-gray-900 
-                                        text-gray-900 dark:text-white 
-                                        placeholder-gray-500 dark:placeholder-gray-400
-                                        focus:ring focus:ring-orange-500"
+                                    <textarea name="comment" rows="3" required class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 
+                                                                bg-white dark:bg-gray-900 
+                                                                text-gray-900 dark:text-white 
+                                                                placeholder-gray-500 dark:placeholder-gray-400
+                                                                focus:ring focus:ring-orange-500"
                                         placeholder="Escribe tu opinión del curso..."></textarea>
                                 </div>
 
-                                <button 
-                                    class="bg-orange-500 text-white px-6 py-2 rounded-full 
-                                           hover:bg-orange-600 dark:hover:bg-orange-400 
-                                           transition">
+                                <button class="bg-orange-500 text-white px-6 py-2 rounded-full 
+                                                                   hover:bg-orange-600 dark:hover:bg-orange-400 
+                                                                   transition">
                                     Enviar reseña
                                 </button>
                             </form>
@@ -207,7 +239,8 @@
 
                         <div class="flex justify-between mb-2">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold">
+                                <div
+                                    class="w-10 h-10 bg-orange-500 text-white rounded-full flex items-center justify-center font-bold">
                                     {{ strtoupper(substr($review->user->name, 0, 1)) }}
                                 </div>
                                 <div>
@@ -224,17 +257,17 @@
                             <div class="flex text-yellow-400">
                                 @for($i = 1; $i <= 5; $i++)
                                     <svg class="w-5 h-5 {{ $i <= $review->rating ? 'fill-current' : 'fill-gray-500 dark:fill-gray-600' }}"
-                                         viewBox="0 0 20 20">
+                                        viewBox="0 0 20 20">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902
-                                        0l1.07 3.292a1 1 0 00.95.69h3.462
-                                        c.969 0 1.371 1.24.588 1.81l-2.8 2.034
-                                        a1 1 0 00-.364 1.118l1.07 3.292
-                                        c.3.921-.755 1.688-1.54 1.118l-2.8
-                                        -2.034a1 1 0 00-1.175 0l-2.8
-                                        2.034c-.784.57-1.838-.197-1.539
-                                        -1.118l1.07-3.292a1 1 0 00-.364
-                                        -1.118L2.98 8.72c-.783-.57-.38-1.81
-                                        .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                        0l1.07 3.292a1 1 0 00.95.69h3.462
+                                                        c.969 0 1.371 1.24.588 1.81l-2.8 2.034
+                                                        a1 1 0 00-.364 1.118l1.07 3.292
+                                                        c.3.921-.755 1.688-1.54 1.118l-2.8
+                                                        -2.034a1 1 0 00-1.175 0l-2.8
+                                                        2.034c-.784.57-1.838-.197-1.539
+                                                        -1.118l1.07-3.292a1 1 0 00-.364
+                                                        -1.118L2.98 8.72c-.783-.57-.38-1.81
+                                                        .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                     </svg>
                                 @endfor
                             </div>
