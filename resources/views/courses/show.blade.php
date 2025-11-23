@@ -21,29 +21,22 @@
                             {{ $course->title }}
                         </h1>
                         @php
-                        
-                            $likes = $course->likes->count();
+                            $likes = $course->likes_count ?? 0;
+                            $totalReviews = $course->reviews_count ?? 0;
+                            $avgRating = $course->reviews_avg_rating ?? 0;
 
                         
-                            $totalReviews = $course->reviews->count();
-                            $avgRating = $totalReviews > 0 ? $course->reviews->avg('rating') : 0;
+                            $ratingScore = ($avgRating / 5) * 100;
 
-                            $ratingNormalized = ($avgRating / 5) * 100;
+                            $reviewWeight = min($totalReviews / 20, 1); 
 
-                          
-                            $maxLikes = 10;
-                            $likesNormalized = min(($likes / $maxLikes) * 100, 100);
+                       
+                            $likeBonus = min($likes / 100, 1) * 5;
 
-                            $confidence = min($totalReviews / 10, 1);
-
-                            $ratingWeight = 0.7;
-                            $likesWeight = 0.3;
-
-                            $baseScore = ($ratingNormalized * $ratingWeight) + ($likesNormalized * $likesWeight);
-
-               
-                            $ponderacionFinal = $baseScore * $confidence;
+                         
+                            $ponderacionFinal = ($ratingScore * (0.6 + ($reviewWeight * 0.4))) + $likeBonus;
                         @endphp
+
 
                         {{-- Instructor --}}
                         <div class="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-4">
@@ -99,7 +92,7 @@
 
                                                 <button
                                                     class="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all
-                                                                            {{ $userLiked
+                                                                                                {{ $userLiked
                             ? 'bg-red-500 text-white hover:bg-red-600'
                             : 'bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-white hover:bg-red-100 dark:hover:bg-red-900/40' }}">
 
@@ -126,8 +119,8 @@
                     <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow border border-gray-200 dark:border-gray-700">
                         <h2 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">📑 Tabla de contenido</h2>
                         <pre class="whitespace-pre-line text-gray-700 dark:text-gray-300">
-                            {{ $course->content_table }}
-                                                    </pre>
+                                    {{ $course->content_table }}
+                                                            </pre>
                     </div>
                 @endif
 
@@ -186,9 +179,9 @@
 
                                 <div class="mb-4">
                                     <select name="rating" required class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 
-                                                                bg-white dark:bg-gray-900 
-                                                                text-gray-900 dark:text-white 
-                                                                focus:ring focus:ring-orange-500">
+                                                                            bg-white dark:bg-gray-900 
+                                                                            text-gray-900 dark:text-white 
+                                                                            focus:ring focus:ring-orange-500">
                                         <option value="">Selecciona calificación</option>
                                         <option value="5">⭐⭐⭐⭐⭐</option>
                                         <option value="4">⭐⭐⭐⭐</option>
@@ -200,16 +193,16 @@
 
                                 <div class="mb-4">
                                     <textarea name="comment" rows="3" required class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 
-                                                                bg-white dark:bg-gray-900 
-                                                                text-gray-900 dark:text-white 
-                                                                placeholder-gray-500 dark:placeholder-gray-400
-                                                                focus:ring focus:ring-orange-500"
+                                                                            bg-white dark:bg-gray-900 
+                                                                            text-gray-900 dark:text-white 
+                                                                            placeholder-gray-500 dark:placeholder-gray-400
+                                                                            focus:ring focus:ring-orange-500"
                                         placeholder="Escribe tu opinión del curso..."></textarea>
                                 </div>
 
                                 <button class="bg-orange-500 text-white px-6 py-2 rounded-full 
-                                                                   hover:bg-orange-600 dark:hover:bg-orange-400 
-                                                                   transition">
+                                                                               hover:bg-orange-600 dark:hover:bg-orange-400 
+                                                                               transition">
                                     Enviar reseña
                                 </button>
                             </form>
@@ -259,15 +252,15 @@
                                     <svg class="w-5 h-5 {{ $i <= $review->rating ? 'fill-current' : 'fill-gray-500 dark:fill-gray-600' }}"
                                         viewBox="0 0 20 20">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902
-                                                        0l1.07 3.292a1 1 0 00.95.69h3.462
-                                                        c.969 0 1.371 1.24.588 1.81l-2.8 2.034
-                                                        a1 1 0 00-.364 1.118l1.07 3.292
-                                                        c.3.921-.755 1.688-1.54 1.118l-2.8
-                                                        -2.034a1 1 0 00-1.175 0l-2.8
-                                                        2.034c-.784.57-1.838-.197-1.539
-                                                        -1.118l1.07-3.292a1 1 0 00-.364
-                                                        -1.118L2.98 8.72c-.783-.57-.38-1.81
-                                                        .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                                                0l1.07 3.292a1 1 0 00.95.69h3.462
+                                                                c.969 0 1.371 1.24.588 1.81l-2.8 2.034
+                                                                a1 1 0 00-.364 1.118l1.07 3.292
+                                                                c.3.921-.755 1.688-1.54 1.118l-2.8
+                                                                -2.034a1 1 0 00-1.175 0l-2.8
+                                                                2.034c-.784.57-1.838-.197-1.539
+                                                                -1.118l1.07-3.292a1 1 0 00-.364
+                                                                -1.118L2.98 8.72c-.783-.57-.38-1.81
+                                                                .588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                     </svg>
                                 @endfor
                             </div>
