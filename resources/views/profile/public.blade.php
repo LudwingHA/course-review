@@ -67,6 +67,10 @@
                                     </span>
                                 </div>
                             </div>
+                            <div>
+                                <img src="{{ asset('storage/' . $course->image) }}"
+                                    class="h-40 w-55 object-cover hover:scale-105 transition-transform">
+                            </div>
                             <p class="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">{{ Str::limit($course->description, 200) }}</p>
                             <a href="{{ route('courses.show', $course) }}" class="inline-flex items-center text-orange-600 dark:text-orange-400 hover:text-orange-800 dark:hover:text-orange-300 font-semibold transition-colors">
                                 Ver curso

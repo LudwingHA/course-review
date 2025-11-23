@@ -118,9 +118,11 @@
                             </h3>
 
                             {{-- Instructor --}}
-                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                👤 {{ $course->instructor->name ?? 'Sin instructor' }}
-                            </p>
+                       
+                              <a href="{{ route('profile.public', $course->instructor->id) }}"
+                                class="font-semibold text-orange-600 hover:underline">
+                                {{ $course->instructor->name }}
+                            </a>
 
                             {{-- Descripción --}}
                             <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
