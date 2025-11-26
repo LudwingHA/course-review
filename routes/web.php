@@ -7,11 +7,23 @@ use App\Http\Controllers\ReviewController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\PublicCourseController;
+use App\Http\Controllers\AdminUserController;
+
+
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('courses', CourseController::class)->except(['show']);
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+});
+Route::middleware(['auth', 'admin'])->group(function () {
+
+    Route::get('/admin/users', [AdminUserController::class, 'index'])->name('admin.users.index');
+
+Route::get('/admin/users/{user}/edit', [AdminUserController::class, 'edit'])->name('admin.users.edit');
+Route::put('/admin/users/{user}', [AdminUserController::class, 'update'])->name('admin.users.update');
+Route::delete('/admin/users/{user}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
+
 });
 Route::get('/dashboard', function () {
     return redirect()->route('courses.index');

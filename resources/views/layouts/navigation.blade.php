@@ -147,6 +147,13 @@
 
         </div>
     </div>
+    @auth
+    @if(Auth::user()->isAdmin())
+        <x-nav-link href="{{ route('admin.users.index') }}">
+            Admin
+        </x-nav-link>
+    @endif
+@endauth
 </nav>
 
 <div x-show="open" x-transition
@@ -179,4 +186,8 @@
             </a>
         </div>
     @endguest
+
+
+
+
 </div>
