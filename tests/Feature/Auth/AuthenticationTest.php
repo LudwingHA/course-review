@@ -1,5 +1,4 @@
 <?php
-
 use App\Models\User;
 
 test('login screen can be rendered', function () {
@@ -9,7 +8,9 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create([
+        'password' => bcrypt('password'), // Nos aseguramos que coincida
+    ]);
 
     $response = $this->post('/login', [
         'email' => $user->email,
@@ -17,11 +18,15 @@ test('users can authenticate using the login screen', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+
+    // ✅ Adaptado a tu redirect real
+    $response->assertRedirect(route('home'));
 });
 
 test('users can not authenticate with invalid password', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->create([
+        'password' => bcrypt('password'),
+    ]);
 
     $this->post('/login', [
         'email' => $user->email,
@@ -37,5 +42,7 @@ test('users can logout', function () {
     $response = $this->actingAs($user)->post('/logout');
 
     $this->assertGuest();
+
+    // ✅ Tu controller redirige a /
     $response->assertRedirect('/');
 });

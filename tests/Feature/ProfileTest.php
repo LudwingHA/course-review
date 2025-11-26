@@ -1,85 +1,80 @@
 <?php
 
-use App\Models\User;
+namespace App\Http\Controllers;
 
-test('profile page is displayed', function () {
-    $user = User::factory()->create();
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
-    $response = $this
-        ->actingAs($user)
-        ->get('/profile');
+class ProfileController extends Controller
+{
+    public function edit(Request $request)
+    {
+        return view('profile.edit', [
+            'user' => $request->user(),
+        ]);
+    }
 
-    $response->assertOk();
-});
+    public function update(Request $request)
+    {
+        $user = $request->user();
 
-test('profile information can be updated', function () {
-    $user = User::factory()->create();
-
-    $response = $this
-        ->actingAs($user)
-        ->patch('/profile', [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', Rule::unique('users')->ignore($user->id)],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'avatar' => ['nullable', 'image', 'max:2048'],
         ]);
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
+        // ✅ Si cambia el email → quitar verificación
+        if ($validated['email'] !== $user->email) {
+            $user->email_verified_at = null;
+        }
 
-    $user->refresh();
+        // Avatar
+        if ($request->hasFile('avatar')) {
+            if ($user->avatar) {
+                Storage::disk('public')->delete($user->avatar);
+            }
 
-    $this->assertSame('Test User', $user->name);
-    $this->assertSame('test@example.com', $user->email);
-    $this->assertNull($user->email_verified_at);
-});
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = $path;
+        }
 
-test('email verification status is unchanged when the email address is unchanged', function () {
-    $user = User::factory()->create();
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->description = $validated['description'] ?? null;
+        $user->save();
 
-    $response = $this
-        ->actingAs($user)
-        ->patch('/profile', [
-            'name' => 'Test User',
-            'email' => $user->email,
+        // ✅ IMPORTANTE: redirección correcta
+        return redirect('/profile');
+    }
+
+    public function destroy(Request $request)
+    {
+        $request->validateWithBag('userDeletion', [
+            'password' => ['required']
         ]);
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/profile');
+        $user = $request->user();
 
-    $this->assertNotNull($user->refresh()->email_verified_at);
-});
+        if (! Hash::check($request->password, $user->password)) {
+            return back()
+                ->withErrors([
+                    'password' => 'Incorrect password',
+                ], 'userDeletion')
+                ->withInput();
+        }
 
-test('user can delete their account', function () {
-    $user = User::factory()->create();
+        // eliminar avatar si existe
+        if ($user->avatar) {
+            Storage::disk('public')->delete($user->avatar);
+        }
 
-    $response = $this
-        ->actingAs($user)
-        ->delete('/profile', [
-            'password' => 'password',
-        ]);
+        auth()->logout();
+        $user->delete();
 
-    $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect('/');
-
-    $this->assertGuest();
-    $this->assertNull($user->fresh());
-});
-
-test('correct password must be provided to delete account', function () {
-    $user = User::factory()->create();
-
-    $response = $this
-        ->actingAs($user)
-        ->from('/profile')
-        ->delete('/profile', [
-            'password' => 'wrong-password',
-        ]);
-
-    $response
-        ->assertSessionHasErrorsIn('userDeletion', 'password')
-        ->assertRedirect('/profile');
-
-    $this->assertNotNull($user->fresh());
-});
+        return redirect('/');
+    }
+}

@@ -13,7 +13,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
-
+Route::get('/dashboard', function () {
+    return redirect()->route('courses.index');
+})->middleware(['auth'])->name('dashboard');
 Route::get('/', [PublicCourseController::class, 'index'])->name('home');
 Route::get('/curso/{course:slug}', [PublicCourseController::class, 'show'])->name('courses.show');
 Route::post('/curso/{course}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
