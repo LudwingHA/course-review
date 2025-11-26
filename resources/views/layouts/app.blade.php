@@ -4,8 +4,6 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <script>
-        // Este script ahora solo aplica la clase 'dark' si está en localStorage o prefiere el modo oscuro
-        // Esto previene un destello de contenido sin estilo (FOUC)
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
         } else {
