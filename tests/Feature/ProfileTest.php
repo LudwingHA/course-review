@@ -27,12 +27,10 @@ class ProfileController extends Controller
             'avatar' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        // ✅ Si cambia el email → quitar verificación
         if ($validated['email'] !== $user->email) {
             $user->email_verified_at = null;
         }
 
-        // Avatar
         if ($request->hasFile('avatar')) {
             if ($user->avatar) {
                 Storage::disk('public')->delete($user->avatar);
@@ -47,7 +45,6 @@ class ProfileController extends Controller
         $user->description = $validated['description'] ?? null;
         $user->save();
 
-        // ✅ IMPORTANTE: redirección correcta
         return redirect('/profile');
     }
 
@@ -67,7 +64,7 @@ class ProfileController extends Controller
                 ->withInput();
         }
 
-        // eliminar avatar si existe
+  
         if ($user->avatar) {
             Storage::disk('public')->delete($user->avatar);
         }

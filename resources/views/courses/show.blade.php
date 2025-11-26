@@ -37,7 +37,7 @@
                         @endphp
 
                         <div class="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-4">
-                            <span>👨‍🏫 Instructor:</span>
+                            <span>Instructor:</span>
                             <a href="{{ route('profile.public', $course->instructor->id) }}"
                                 class="font-semibold text-orange-600 hover:underline">
                                 {{ $course->instructor->name }}
@@ -73,8 +73,8 @@
 
                         <p class="text-sm text-gray-600 dark:text-gray-400">
                             ⭐ Promedio: {{ number_format($avgRating, 1) }} / 5
-                            | ❤️ Likes: {{ $likes }}
-                            | 📝 Reseñas: {{ $totalReviews }}
+                            |  Likes: {{ $likes }}
+                            |  Reseñas: {{ $totalReviews }}
                         </p>
                     </div>
 
@@ -96,9 +96,7 @@
                                                 </button>
                                             </form>
                         @else
-                            <p class="text-gray-400 text-sm mt-2">
-                                Inicia sesión para dar like ❤️
-                            </p>
+                    
                         @endauth
                     </div>
                 </div>
@@ -110,7 +108,7 @@
 
                 @if ($course->content_table)
                     <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow border border-gray-200 dark:border-gray-700">
-                        <h2 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">📑 Tabla de contenido</h2>
+                        <h2 class="text-xl font-bold mb-3 text-gray-900 dark:text-white">Tabla de contenido</h2>
                         <pre class="whitespace-pre-line text-gray-700 dark:text-gray-300">
                                                                                     {{ $course->content_table }}
                                                                                                             </pre>
@@ -120,7 +118,7 @@
 
                 @if ($course->youtube_urls)
                     <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow border border-gray-200 dark:border-gray-700">
-                        <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">🎬 Videos</h2>
+                        <h2 class="text-xl font-bold mb-4 text-gray-900 dark:text-white">Videos</h2>
 
                         <div class="space-y-4">
                             @foreach(explode(',', $course->youtube_urls) as $url)
@@ -163,7 +161,7 @@
                         <div class="mb-8 p-6 bg-gray-100 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
 
                             <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">
-                                ✍️ Deja tu reseña
+                                Deja tu reseña
                             </h3>
 
                             <form action="{{ route('reviews.store', $course->slug) }}" method="POST">

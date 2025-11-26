@@ -11,11 +11,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 class CourseTest extends TestCase
 {
     use RefreshDatabase;
-
-    /**
-     * PRUEBA 1:
-     * La página principal debe cargar con código 200.
-     */
     public function test_home_page_is_accessible()
     {
         $response = $this->get('/');
@@ -23,10 +18,6 @@ class CourseTest extends TestCase
         $response->assertStatus(200);
     }
 
-    /**
-     * PRUEBA 2:
-     * La página de detalle muestra el título del curso.
-     */
     public function test_course_detail_page_displays_course_title()
     {
         $instructor = User::factory()->create([
@@ -47,10 +38,6 @@ class CourseTest extends TestCase
         $response->assertSee('Curso Profesional de Laravel');
     }
 
-    /**
-     * PRUEBA 3:
-     * Un invitado no puede acceder a la página de creación de cursos.
-     */
     public function test_guest_cannot_access_create_course_page()
     {
         $response = $this->get(route('courses.create'));
@@ -58,10 +45,7 @@ class CourseTest extends TestCase
         $response->assertRedirect('/login');
     }
 
-    /**
-     * PRUEBA 4:
-     * Un usuario autenticado con rol instructor puede crear un curso.
-     */
+  
     public function test_authenticated_user_can_create_a_course()
     {
         $instructor = User::factory()->create([

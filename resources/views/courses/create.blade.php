@@ -22,15 +22,11 @@
             class="space-y-6 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-8">
 
             @csrf
-
-            <!-- TÍTULO -->
             <div>
                 <x-input-label for="title" :value="__('Título del curso')" />
                 <x-text-input id="title" name="title" type="text" class="block w-full"
                     value="{{ old('title') }}" required />
             </div>
-
-            <!-- DESCRIPCIÓN -->
             <div>
                 <x-input-label for="description" :value="__('Descripción')" />
                 <textarea id="description" name="description" rows="4"
@@ -53,8 +49,6 @@
                         class="text-sm text-gray-500 file:bg-orange-100 file:text-orange-700 file:px-4 file:py-2 file:rounded-lg">
                 </div>
             </div>
-
-            <!-- CATEGORÍA -->
             <div>
                 <x-input-label for="category_id" :value="__('Categoría')" />
                 <select id="category_id" name="category_id"
@@ -65,8 +59,6 @@
                     @endforeach
                 </select>
             </div>
-
-            <!-- ETIQUETAS DINÁMICAS -->
             <div>
                 <x-input-label :value="__('Etiquetas')" />
 
@@ -83,7 +75,6 @@
                 </div>
             </div>
 
-            <!-- TABLA DE CONTENIDO -->
             <div>
                 <x-input-label :value="__('Tabla de contenido')" />
 
@@ -103,22 +94,15 @@
                     <textarea id="content_table" name="content_table" hidden></textarea>
                 </div>
             </div>
-
-            <!-- URLS YOUTUBE -->
             <div>
                 <x-input-label for="youtube_urls" :value="__('Videos de YouTube')" />
                 <x-text-input id="youtube_urls" name="youtube_urls" type="text" class="block w-full"
                     placeholder="https://youtube.com/..." />
             </div>
-
-            <!-- FECHA -->
             <div>
                 <x-input-label for="published_at" :value="__('Fecha de publicación')" />
                 <x-text-input id="published_at" name="published_at" type="date" class="block w-full" />
             </div>
-
-            <!-- BOTÓN -->
-            <div class="flex justify-end">
                 <x-primary-button
                     class="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 px-6 py-3 rounded-xl text-white shadow-lg">
                     Crear Curso
@@ -127,8 +111,6 @@
 
         </form>
     </div>
-
-    <!-- ===================== SCRIPTS ===================== -->
 
     <script>
         function previewImage(input) {
@@ -142,7 +124,6 @@
         }
     </script>
 
-    <!-- TAGS INTERACTIVOS -->
     <script>
         let tags = [];
         const tagInput = document.getElementById('tag-input');
@@ -189,7 +170,6 @@
         }
     </script>
 
-    <!-- TABLA DE CONTENIDO -->
     <script>
         let topics = [];
 
@@ -198,8 +178,6 @@
             const text = input.value.trim();
 
             if (text === '') return;
-
-            // Permite varias líneas pegadas
             const lines = text.split("\n");
 
             lines.forEach(line => {

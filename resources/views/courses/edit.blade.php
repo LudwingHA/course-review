@@ -17,22 +17,18 @@
             @csrf
             @method('PUT')
 
-            {{-- TÍTULO --}}
+      
             <div>
                 <x-input-label for="title" :value="__('Título del curso')" />
                 <x-text-input id="title" name="title" type="text" class="block w-full mt-1" 
                     value="{{ old('title', $course->title) }}" required />
             </div>
-
-            {{-- DESCRIPCIÓN --}}
             <div>
                 <x-input-label for="description" :value="__('Descripción')" />
                 <textarea id="description" name="description" rows="4"
                     class="block w-full mt-1 bg-gray-50 dark:bg-gray-700 border border-gray-300 rounded-lg px-4 py-2 text-white resize-none"
                 required>{{ old('description', $course->description) }}</textarea>
             </div>
-
-            {{-- IMAGEN --}}
             <div>
                 <x-input-label for="image" :value="__('Imagen del curso')" />
                 <div class="flex items-center gap-6 mt-2">
@@ -59,8 +55,6 @@
                     @endforeach
                 </select>
             </div>
-
-            {{-- ✅ ETIQUETAS MODERNAS --}}
             <div>
                 <x-input-label :value="__('Etiquetas')" />
 
@@ -74,8 +68,6 @@
                     <input type="hidden" name="tags" id="tags-hidden">
                 </div>
             </div>
-
-            {{-- ✅ TABLA DE CONTENIDO INTERACTIVA --}}
             <div>
                 <x-input-label :value="__('Tabla de contenido')" />
 
@@ -96,14 +88,13 @@
                 </div>
             </div>
 
-            {{-- YOUTUBE URLs --}}
+    
             <div>
                 <x-input-label for="youtube_urls" :value="__('URLs de videos')" />
                 <x-text-input id="youtube_urls" name="youtube_urls" type="text" class="block w-full"
                     value="{{ old('youtube_urls', $course->youtube_urls) }}" />
             </div>
 
-            {{-- FECHA --}}
             <div>
                 <x-input-label for="published_at" :value="__('Fecha de publicación')" />
                 <x-text-input id="published_at" name="published_at"
@@ -111,7 +102,6 @@
                               value="{{ old('published_at', optional($course->published_at)->format('Y-m-d')) }}" />
             </div>
 
-            {{-- BOTÓN --}}
             <div class="flex justify-end pt-6">
                 <x-primary-button>
                     Guardar Cambios
@@ -121,10 +111,9 @@
         </form>
     </div>
 
-{{-- 🧠 JAVASCRIPT --}}
+
 <script>
-    // ----------------------
-    // PREVIEW DE IMAGEN
+
     function previewImage(input) {
         const preview = document.getElementById('image-preview');
         const file = input.files[0];
@@ -136,8 +125,7 @@
         }
     }
 
-    // ----------------------
-    // ETIQUETAS
+  
     let tags = [];
 
     const rawTags = "{{ old('tags', $course->tags) }}";
@@ -183,8 +171,6 @@
 
     renderTags();
 
-    // ----------------------
-    // TABLA DE CONTENIDO
     let topics = [];
 
     const rawContent = `{!! str_replace("\n", "\\n", old('content_table', $course->content_table)) !!}`;

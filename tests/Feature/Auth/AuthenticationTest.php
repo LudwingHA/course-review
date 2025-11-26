@@ -9,7 +9,7 @@ test('login screen can be rendered', function () {
 
 test('users can authenticate using the login screen', function () {
     $user = User::factory()->create([
-        'password' => bcrypt('password'), // Nos aseguramos que coincida
+        'password' => bcrypt('password'), 
     ]);
 
     $response = $this->post('/login', [
@@ -19,7 +19,6 @@ test('users can authenticate using the login screen', function () {
 
     $this->assertAuthenticated();
 
-    // ✅ Adaptado a tu redirect real
     $response->assertRedirect(route('home'));
 });
 
@@ -43,6 +42,5 @@ test('users can logout', function () {
 
     $this->assertGuest();
 
-    // ✅ Tu controller redirige a /
     $response->assertRedirect('/');
 });
