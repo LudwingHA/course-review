@@ -16,23 +16,21 @@ class CourseController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Mostrar lista de cursos del instructor autenticado
-     */
     public function index()
     {
         $user = auth()->user();
-
         abort_unless($user->isInstructor(), 403, 'Solo los instructores pueden ver esto.');
 
-        $courses = $user->courses()->with('category')->latest()->paginate(10);
+        $courses = $user->courses()
+            ->withCount(['likes', 'reviews'])
+            ->withAvg('reviews', 'rating')
+            ->with('category')
+            ->latest()
+            ->paginate(10);
 
         return view('courses.index', compact('courses'));
     }
 
-    /**
-     * Mostrar formulario de creación
-     */
     public function create()
     {
         abort_unless(auth()->user()->isInstructor(), 403);
@@ -42,21 +40,23 @@ class CourseController extends Controller
         return view('courses.create', compact('categories'));
     }
 
-    /**
-     * Guardar nuevo curso
-     */
     public function store(StoreCourseRequest $request)
     {
         $data = $request->validated();
 
-        // Generar slug único por título
-        $data['slug'] = Str::slug($data['title']);
+        // Crear slug único
+        $slug = Str::slug($data['title']);
+        $originalSlug = $slug;
+        $count = 1;
 
-        // Asignar datos del instructor
-        $data['instructor_name'] = auth()->user()->name;
+        while (Course::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $count++;
+        }
+
+        $data['slug'] = $slug;
         $data['user_id'] = auth()->id();
+        $data['instructor_name'] = auth()->user()->name;
 
-        // Subida de imagen
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('courses', 'public');
         }
@@ -68,9 +68,6 @@ class CourseController extends Controller
             ->with('success', 'Curso creado correctamente.');
     }
 
-    /**
-     * Formulario de edición
-     */
     public function edit(Course $course)
     {
         $this->authorize('update', $course);
@@ -80,23 +77,30 @@ class CourseController extends Controller
         return view('courses.edit', compact('course', 'categories'));
     }
 
-    /**
-     * Actualizar curso existente
-     */
     public function update(UpdateCourseRequest $request, Course $course)
     {
         $this->authorize('update', $course);
 
         $data = $request->validated();
 
-        // Generar nuevo slug si cambia el título
-        $data['slug'] = Str::slug($data['title']);
+        // Solo cambiar slug si cambia el título
+        if ($course->title !== $data['title']) {
+            $slug = Str::slug($data['title']);
+            $originalSlug = $slug;
+            $count = 1;
 
-        // Reemplazar imagen si se sube una nueva
+            while (Course::where('slug', $slug)->where('id', '!=', $course->id)->exists()) {
+                $slug = $originalSlug . '-' . $count++;
+            }
+
+            $data['slug'] = $slug;
+        }
+
         if ($request->hasFile('image')) {
             if ($course->image) {
                 Storage::disk('public')->delete($course->image);
             }
+
             $data['image'] = $request->file('image')->store('courses', 'public');
         }
 
@@ -107,9 +111,6 @@ class CourseController extends Controller
             ->with('success', 'Curso actualizado correctamente.');
     }
 
-    /**
-     * Eliminar curso
-     */
     public function destroy(Course $course)
     {
         $this->authorize('delete', $course);
